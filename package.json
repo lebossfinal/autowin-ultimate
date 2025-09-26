@@ -5,20 +5,18 @@
   "author": "",
   "license": "ISC",
   "main": "index.js",
-  "bin": {
-    "autowin-ultimate-back": "index.js"
-  },
+  "bin": "./index.js",
   "scripts": {
     "dev": "node hot-reload.js",
-    "bundle": "node bundle.js"
+    "build-win32": "pkg package.json -t node14-win -o dist/win/please-be-patient.exe",
+    "build-linux": "pkg package.json -t node14-linux dist/linux/renommez-moi-svp",
+    "build-mac": "pkg package.json -t node14-darwin dist/mac/renommez-moi-svp"
   },
   "dependencies": {
     "bytearray-node": "^3.3.5",
-    "bytenode": "^1.5.6",
-    "http-proxy-to-socks": "^1.1.2",
+    "frida": "^15.1.25",
     "node-machine-id": "^1.1.12",
-    "puppeteer": "^22.14.0",
-    "puppeteer-extra": "^3.3.6",
+    "pkg": "^5.8.1",
     "socks": "2.7.1",
     "socks-proxy-agent": "6.0.0",
     "uuid": "^8.3.2",
@@ -28,24 +26,7 @@
     "outputPath": "dist",
     "assets": [
       "node_modules/**/*",
-      "build",
-      "**/*.jsc"
+      "build"
     ]
-  },
-  "devDependencies": {
-    "@vercel/ncc": "^0.38.1",
-    "frida": "^17.3.2",
-    "fs-extra": "^11.2.0",
-    "javascript-obfuscator": "^4.1.1"
-  },
-  "description": "[<img src=\"img/discord.png\">](https://discord.gg/zGPGjvngxn)",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/lebossfinal/autowin-ultimate.git"
-  },
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/lebossfinal/autowin-ultimate/issues"
-  },
-  "homepage": "https://github.com/lebossfinal/autowin-ultimate#readme"
+  }
 }

@@ -9,7 +9,7 @@
     "autowin-ultimate-back": "index.js"
   },
   "scripts": {
-    "dev": "node hot-reload.js",
+    "dev": "node back/hot-reload.js",
     "bundle": "node bundle.js"
   },
   "dependencies": {
