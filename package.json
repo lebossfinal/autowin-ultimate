@@ -1,11 +1,13 @@
 {
-  "name": "dofus-multi-back",
+  "name": "autowin-ultimate-back",
   "version": "1.0.0",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "main": "index.js",
-  "bin": "./index.js",
+  "bin": {
+    "autowin-ultimate-back": "index.js"
+  },
   "scripts": {
     "dev": "node hot-reload.js",
     "bundle": "node bundle.js"
@@ -35,5 +37,15 @@
     "@vercel/ncc": "^0.38.1",
     "frida": "^15.1.25",
     "javascript-obfuscator": "^4.1.1"
-  }
+  },
+  "description": "[<img src=\"img/discord.png\">](https://discord.gg/zGPGjvngxn)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lebossfinal/autowin-ultimate.git"
+  },
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/lebossfinal/autowin-ultimate/issues"
+  },
+  "homepage": "https://github.com/lebossfinal/autowin-ultimate#readme"
 }
