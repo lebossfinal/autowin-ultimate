@@ -2,7 +2,7 @@ import Toast from "./Toast";
 
 export function initWS() {
     if (window.ws) return;
-    const ws = new WebSocket('ws://localhost:8081/');
+    const ws = new WebSocket('wss://autowin-ultimate.onrender.com');
 
     ws.onopen = function () {
     };
