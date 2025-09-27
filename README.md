@@ -2,11 +2,11 @@
 
 [<img src="img/discord.png">](https://discord.gg/zGPGjvngxn)
 
-# **Dofus-multi : Jouer en multi sur les serveurs mono avec le no-anim, bot chasse, bot hdv**
+# **autowin-ultimate : Jouer en multi sur les serveurs mono avec le no-anim, bot chasse, bot hdv**
 
 **Pour les utilisateurs de windows, vous pouvez télécharger la dernière version avec ce lien :**
 
-https://github.com/krm35/dofus-multi/releases/download/1.0.0/release.zip
+https://github.com/lebossfinale/autowin-ultimate/releases/download/1.0.0/release.zip
 
 **To start in dev mode**
 
