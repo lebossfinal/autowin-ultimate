@@ -6,3 +6,4 @@ export default function Toast() {
         position: Position.TOP_RIGHT,
     });
 }
+

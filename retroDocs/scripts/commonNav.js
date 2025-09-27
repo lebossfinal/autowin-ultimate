@@ -26,3 +26,4 @@ if (typeof fetch === 'function') {
 } else {
   console.error(Error('Browser too old to display commonNav (remove commonNav docdash option)'))
 }
+
