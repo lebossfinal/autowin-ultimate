@@ -281,6 +281,7 @@ router['put-account'] = async (p) => {
     const shield = json['security']?.includes("SHIELD");
 
     console.log(`[put-account] account id=${id} login=${login} shield=${!!shield}`);
+    console.log("[router.js] loaded - pid:", process.pid, "env:", process.env.NODE_ENV || "dev");
 
     if (shield) {
         console.log("[put-account] account requires SHIELD, requesting security code...");
