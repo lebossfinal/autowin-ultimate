@@ -52,10 +52,17 @@ const PORT = process.env.PORT || 8081;
 
 const server = http.createServer(
     function (req, res) {
+        // Ajout des headers CORS
         res.setHeader("Access-Control-Allow-Origin", "https://lebossfinal.github.io");
         res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
+        // Répondre aux requêtes OPTIONS (prévol)
+        if (req.method === 'OPTIONS') {
+            res.writeHead(204);
+            res.end();
+            return;
+        }
         let fileName = path.basename(req.url).split('?')[0] || "index.html";
         if (!extensions[path.extname(fileName)]) fileName = "index.html";
         res.setHeader("Content-Type", extensions[path.extname(fileName)]);
