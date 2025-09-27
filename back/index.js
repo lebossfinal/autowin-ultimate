@@ -48,14 +48,17 @@ const extensions = {
     ".pdf": "application/pdf",
 };
 
+const PORT = process.env.PORT || 8081;
+
 const server = http.createServer(
-    function (req,
-              res) {
+    function (req, res) {
         let fileName = path.basename(req.url).split('?')[0] || "index.html";
         if (!extensions[path.extname(fileName)]) fileName = "index.html";
         res.setHeader("Content-Type", extensions[path.extname(fileName)]);
         res.end(router['files'][fileName]);
-    }).listen(8081);
+    }).listen(PORT, '0.0.0.0', () => {
+        console.log(`Server running on port ${PORT}`);
+    });
 
 server.on('upgrade', function upgrade(request, socket, head) {
     wss['handleUpgrade'](request, socket, head, function done(ws) {
@@ -107,6 +110,8 @@ if (!c.isTest) {
             }, null, "launcher.cdn.ankama.com"
         );
         newVersion = version['split']('\n')[0].split(' ')[1];
-        process.platform === "win32" && execSync('start "" http://localhost:8081');
+        if (process.platform === "win32" && process.env.NODE_ENV !== 'production') {
+            execSync('start "" http://localhost:' + PORT);
+        }
     })();
 }

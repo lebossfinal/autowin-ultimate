@@ -11,7 +11,7 @@ const net = require('net'),
     dofusServer = new net.Server().listen(5555);
 
 dofusServer.on('connection', () => {
-    console.log("Si autowin-ultimate ne fonctionne pas, vous devez setup votre DSN manuellement et désactiver IPV6");
+    console.log("Si dofus-multi ne fonctionne pas, vous devez setup votre DSN manuellement et désactiver IPV6");
     console.log("Voir tuto dans rubrique Windows 10 sur le lien ci-dessous");
     console.log("https://www.01net.com/astuces/comment-activer-le-dns-cloudflare-pour-accelerer-sa-navigation-web-1411816.html#attachment_862794");
 });
