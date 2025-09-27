@@ -73,30 +73,36 @@ router['delete-account'] = async (p) => {
 
 router['post-account'] = async (p) => {
     const {accountId} = p.body;
-    
-    // Fusionner les données précédentes avec p.body et forcer subscription multi active
+
+    // Suppression champs sensibles avant fusion
+    if (!accounts[accountId]?.added) {
+        delete p.body['key'];
+        delete p.body['refreshToken'];
+    }
+
+    if (p.body.proxy) p.body.localAddress = null;
+
+    // Assurer l'initialisation safe de subscriptions
+    const currentSubs = accounts[accountId]?.subscriptions || {};
+
+    // Fusionner et forcer abonnement multi
     accounts[accountId] = {
         ...accounts[accountId],
         ...p.body,
         subscriptions: {
-            ...accounts[accountId]?.subscriptions,
-            multi: Date.now() + 1000 * 3600 * 24 * 365 * 10  // abonne 10 ans à "multi"
+            ...currentSubs,
+            multi: Date.now() + 1000 * 3600 * 24 * 365 * 10  // abonne 10 ans à multi
         }
     };
-    
-    // Support pour anciens comptes sans key et refreshToken lors de la première ajout
-    if (!accounts[accountId].added) {
-        delete p.body['key'];
-        delete p.body['refreshToken'];
-    }
-    
-    if (p.body.proxy) p.body.localAddress = null;
-    
-    // Sauvegarder et diffuser mise à jour
+
+    console.log("Updated subscriptions for account:", accountId, accounts[accountId].subscriptions);
+
+    // Sauvegarder et notifier
     u.saveAccount(accountId);
     u.broadcast(accountId);
     p.cb(false);
 };
+
 
 
 router['get-connect'] = async (p) => {
