@@ -63,11 +63,15 @@ const server = http.createServer(
             res.end();
             return;
         }
+
+
         let fileName = path.basename(req.url).split('?')[0] || "index.html";
         if (!extensions[path.extname(fileName)]) fileName = "index.html";
         res.setHeader("Content-Type", extensions[path.extname(fileName)]);
         res.end(router['files'][fileName]);
-    }).listen(10000);
+    }).listen(PORT, '0.0.0.0', () => {
+        console.log(`Server running on port ${PORT}`);
+    });
 
 server.on('upgrade', function upgrade(request, socket, head) {
     wss['handleUpgrade'](request, socket, head, function done(ws) {
@@ -119,8 +123,9 @@ if (!c.isTest) {
             }, null, "launcher.cdn.ankama.com"
         );
         newVersion = version['split']('\n')[0].split(' ')[1];
-        process.platform === "win32" && execSync('start "" https://autowin-ultimate.onrender.com');
-
+        if (process.platform === "win32" && process.env.NODE_ENV !== 'production') {
+            execSync('start "" http://localhost:' + PORT);
+        }
     })();
 }
 
