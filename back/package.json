@@ -13,6 +13,9 @@
     "build-linux": "pkg package.json -t node14-linux dist/linux/renommez-moi-svp",
     "build-mac": "pkg package.json -t node14-darwin dist/mac/renommez-moi-svp"
   },
+  "engines": {
+    "node": "18.x"
+  },
   "dependencies": {
     "bytearray-node": "^3.3.5",
     "frida": "^15.1.25",
