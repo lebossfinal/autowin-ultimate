@@ -6,7 +6,7 @@
 
 **Pour les utilisateurs de windows, vous pouvez télécharger la dernière version avec ce lien :**
 
-https://github.com/lebossfinale/autowin-ultimate/releases/download/1.0.0/release.zip
+https://github.com/lebossfinal/autowin-ultimate/releases/download/1.0.0/release.zip
 
 **To start in dev mode**
 

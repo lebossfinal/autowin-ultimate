@@ -235,7 +235,7 @@ export default function Dofus() {
                     intent={"primary"}>
                     Une nouvelle version sera bientôt disponible sur <a
                     target={"_blank"}
-                    href={"https://github.com/lebossfinale/autowin-ultimate/releases"}>https://github.com/lebossfinale/autowin-ultimate/releases</a>
+                    href={"https://github.com/lebossfinal/autowin-ultimate/releases"}>https://github.com/lebossfinal/autowin-ultimate/releases</a>
                 </Callout>
                 <br/>
             </>}
@@ -271,7 +271,7 @@ export default function Dofus() {
                     intent={"warning"}
                     text={"Bug Report"}
                     icon={"help"}
-                    href={"https://github.com/lebossfinale/autowin-ultimate/discussions"}
+                    href={"https://github.com/lebossfinal/autowin-ultimate/discussions"}
                     target={"_blank"}
                 />
             </div>
