@@ -119,7 +119,6 @@ if (!c.isTest) {
             }, null, "launcher.cdn.ankama.com"
         );
         newVersion = version['split']('\n')[0].split(' ')[1];
-        if (process.platform === "win32" && process.env.NODE_ENV !== 'production') {
         process.platform === "win32" && execSync('start "" https://autowin-ultimate.onrender.com');
 
     })();
