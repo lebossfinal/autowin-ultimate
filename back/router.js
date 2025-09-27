@@ -73,37 +73,56 @@ router['delete-account'] = async (p) => {
 
 router['post-account'] = async (p) => {
     const {accountId} = p.body;
-
-    // Suppression champs sensibles avant fusion
-    if (!accounts[accountId]?.added) {
+    if (!accounts[accountId].added) {
         delete p.body['key'];
         delete p.body['refreshToken'];
     }
-
     if (p.body.proxy) p.body.localAddress = null;
-
-    // Assurer l'initialisation safe de subscriptions
-    const currentSubs = accounts[accountId]?.subscriptions || {};
-
-    // Fusionner et forcer abonnement multi
-    accounts[accountId] = {
-        ...accounts[accountId],
-        ...p.body,
-        subscriptions: {
-            ...currentSubs,
-            multi: Date.now() + 1000 * 3600 * 24 * 365 * 10  // abonne 10 ans à multi
-        }
-    };
-
-    console.log("Updated subscriptions for account:", accountId, accounts[accountId].subscriptions);
-
-    // Sauvegarder et notifier
+    accounts[accountId] = {...accounts[accountId], ...p.body};
     u.saveAccount(accountId);
     u.broadcast(accountId);
-    p.cb(false);
+    p.cb(false)
 };
 
+// -----------------------------
+// Subscription fetcher (NEW)
+// -----------------------------
+async function tryFetchSubscriptions({agent, localAddress, APIKEY}) {
+    console.log("[tryFetchSubscriptions] start for APIKEY:", !!APIKEY);
+    const candidates = [
+        "/json/Ankama/v5/Account/Subscriptions",
+        "/json/Ankama/v5/Shop/Subscriptions",
+        "/json/Ankama/v5/Shop/AvailableSubscriptions",
+        "/json/Ankama/v5/Shop/List",
+        "/json/Ankama/v5/Shop/Products",
+        "/json/Ankama/v5/Account/Shop",
+    ];
 
+    for (let path of candidates) {
+        console.log("[tryFetchSubscriptions] trying path:", path);
+        try {
+            const res = await request({
+                agent, localAddress, path, method: 'GET', headers: { APIKEY }
+            });
+            const [err, data] = res || [];
+            if (!err && data) {
+                const roughlyLooksLike = Array.isArray(data) || data?.items || data?.subscriptions || Object.keys(data).length > 0;
+                if (roughlyLooksLike) {
+                    console.log("[tryFetchSubscriptions] SUCCESS path:", path, "keys:", Object.keys(data).slice(0,6));
+                    return {path, data};
+                }
+            } else {
+                console.log("[tryFetchSubscriptions] no usable data for path:", path, "err:", err);
+            }
+        } catch (e) {
+            console.log("[tryFetchSubscriptions] error for path:", path, e && e.message ? e.message : e);
+        }
+    }
+    console.log("[tryFetchSubscriptions] no subscription endpoint succeeded");
+    return null;
+}
+
+// -----------------------------
 
 router['get-connect'] = async (p) => {
     const {account, delay, type} = p.body;
@@ -260,7 +279,11 @@ router['put-account'] = async (p) => {
     json.added = true;
     json.wakfuInterface = Object.keys(accounts).length;
     const shield = json['security']?.includes("SHIELD");
+
+    console.log(`[put-account] account id=${id} login=${login} shield=${!!shield}`);
+
     if (shield) {
+        console.log("[put-account] account requires SHIELD, requesting security code...");
         await request({
             agent,
             localAddress,
@@ -270,9 +293,29 @@ router['put-account'] = async (p) => {
         });
         addedAccounts[login] = json;
     } else {
+        // attempt to fetch subscriptions here (best-effort)
+        try {
+            console.log("[put-account] trying to fetch subscriptions for account:", id);
+            const subsRes = await tryFetchSubscriptions({ agent, localAddress, APIKEY });
+            if (subsRes) {
+                json.subscriptions = subsRes.data;
+                json.subscriptionsFetchedFrom = subsRes.path;
+                console.log("[put-account] subscriptions fetched and stored for", id, "from", subsRes.path);
+            } else {
+                json.subscriptions = null;
+                json.subscriptionsFetchedFrom = null;
+                console.log("[put-account] no subscriptions found for", id);
+            }
+        } catch (e) {
+            console.log("[put-account] error while fetching subscriptions:", e && e.message ? e.message : e);
+            json.subscriptions = null;
+            json.subscriptionsFetchedFrom = null;
+        }
+
         accounts[id] = json;
         u.broadcast(id);
         u.saveAccount(id);
+        console.log("[put-account] account saved:", id);
     }
     p.cb(false, {shield})
 };
@@ -301,11 +344,77 @@ router['post-shield'] = async (p) => {
         }
     );
     const [error, json] = result;
-    if (error === true || !json['encodedCertificate']) return p.cb(true);
+    if (error === true || !json['encodedCertificate']) {
+        console.log("[post-shield] validate code failed for login:", login, "error:", error);
+        return p.cb(true);
+    }
     addedAccounts[login].certificate = json;
     const {id} = addedAccounts[login];
     accounts[id] = addedAccounts[login];
+    console.log("[post-shield] account added after SHIELD validation, id:", id);
+
+    // Try to fetch subscriptions after SHIELD validated
+    try {
+        const APIKEY = accounts[id].key;
+        const agent2 = accounts[id].proxy ? new SocksProxyAgent(accounts[id].proxy) : null;
+        const localAddr2 = accounts[id].localAddress || null;
+        console.log("[post-shield] trying to fetch subscriptions for post-shield account:", id);
+        const subsRes = await tryFetchSubscriptions({agent: agent2, localAddress: localAddr2, APIKEY});
+        if (subsRes) {
+            accounts[id].subscriptions = subsRes.data;
+            accounts[id].subscriptionsFetchedFrom = subsRes.path;
+            console.log("[post-shield] subscriptions fetched and stored for", id, "from", subsRes.path);
+        } else {
+            accounts[id].subscriptions = null;
+            accounts[id].subscriptionsFetchedFrom = null;
+            console.log("[post-shield] no subscriptions found for", id);
+        }
+    } catch (e) {
+        console.log("[post-shield] error fetching subscriptions:", e && e.message ? e.message : e);
+    }
+
     u.broadcast(id);
     u.saveAccount(id);
     p.cb(false, "Account added");
 };
+
+// -----------------------------
+// Route to force sync subscriptions for an existing account
+// -----------------------------
+router['sync-subscriptions'] = async (p) => {
+    const { account } = p.body;
+    console.log("[sync-subscriptions] called for account:", account);
+    if (!accounts[account]) {
+        console.log("[sync-subscriptions] account not found:", account);
+        return p.cb(true, "Account not found");
+    }
+    const APIKEY = accounts[account].key;
+    if (!APIKEY) {
+        console.log("[sync-subscriptions] no API key for account:", account);
+        return p.cb(true, "No API key available");
+    }
+
+    const agent = accounts[account].proxy ? new SocksProxyAgent(accounts[account].proxy) : null;
+    const localAddress = accounts[account].localAddress || null;
+
+    try {
+        const subsRes = await tryFetchSubscriptions({agent, localAddress, APIKEY});
+        if (subsRes) {
+            accounts[account].subscriptions = subsRes.data;
+            accounts[account].subscriptionsFetchedFrom = subsRes.path;
+            u.saveAccount(account);
+            u.broadcast(account);
+            console.log("[sync-subscriptions] succeeded for", account, "from", subsRes.path);
+            return p.cb(false, {ok: true, from: subsRes.path});
+        } else {
+            console.log("[sync-subscriptions] no subscriptions found for", account);
+            return p.cb(true, "No subscriptions found");
+        }
+    } catch (e) {
+        console.log("[sync-subscriptions] error:", e && e.message ? e.message : e);
+        return p.cb(true, "Error while fetching subscriptions");
+    }
+};
+// -----------------------------
+
+// (rest of your router file if any) - currently the file ends here
