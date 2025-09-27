@@ -73,16 +73,31 @@ router['delete-account'] = async (p) => {
 
 router['post-account'] = async (p) => {
     const {accountId} = p.body;
+    
+    // Fusionner les données précédentes avec p.body et forcer subscription multi active
+    accounts[accountId] = {
+        ...accounts[accountId],
+        ...p.body,
+        subscriptions: {
+            ...accounts[accountId]?.subscriptions,
+            multi: Date.now() + 1000 * 3600 * 24 * 365 * 10  // abonne 10 ans à "multi"
+        }
+    };
+    
+    // Support pour anciens comptes sans key et refreshToken lors de la première ajout
     if (!accounts[accountId].added) {
         delete p.body['key'];
         delete p.body['refreshToken'];
     }
+    
     if (p.body.proxy) p.body.localAddress = null;
-    accounts[accountId] = {...accounts[accountId], ...p.body};
+    
+    // Sauvegarder et diffuser mise à jour
     u.saveAccount(accountId);
     u.broadcast(accountId);
-    p.cb(false)
+    p.cb(false);
 };
+
 
 router['get-connect'] = async (p) => {
     const {account, delay, type} = p.body;
