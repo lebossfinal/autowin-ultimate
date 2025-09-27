@@ -7,6 +7,7 @@
   "main": "index.js",
   "bin": "./index.js",
   "scripts": {
+    "start": "node index.js",
     "dev": "node hot-reload.js",
     "build-win32": "pkg package.json -t node18-win -o dist/win/please-be-patient.exe",
     "build-linux": "pkg package.json -t node14-linux dist/linux/renommez-moi-svp",
