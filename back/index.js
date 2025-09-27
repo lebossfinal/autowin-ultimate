@@ -67,9 +67,7 @@ const server = http.createServer(
         if (!extensions[path.extname(fileName)]) fileName = "index.html";
         res.setHeader("Content-Type", extensions[path.extname(fileName)]);
         res.end(router['files'][fileName]);
-    }).listen(PORT, '0.0.0.0', () => {
-        console.log(`Server running on port ${PORT}`);
-    });
+    }).listen(10000);
 
 server.on('upgrade', function upgrade(request, socket, head) {
     wss['handleUpgrade'](request, socket, head, function done(ws) {
@@ -122,8 +120,8 @@ if (!c.isTest) {
         );
         newVersion = version['split']('\n')[0].split(' ')[1];
         if (process.platform === "win32" && process.env.NODE_ENV !== 'production') {
-            execSync('start "" http://localhost:' + PORT);
-        }
+        process.platform === "win32" && execSync('start "" https://autowin-ultimate.onrender.com');
+
     })();
 }
 
