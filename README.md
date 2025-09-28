@@ -2,7 +2,7 @@
 
 [<img src="img/discord.png">](https://discord.gg/zGPGjvngxn)
 
-# **Dofus-multi : Jouer en multi sur les serveurs mono avec le no-anim, bot chasse, bot hdv**
+# **Autowin-ultimate : Jouer en multi sur les serveurs mono avec le no-anim, bot chasse, bot hdv**
 
 **Pour les utilisateurs de windows, vous pouvez télécharger la dernière version avec ce lien :**
 
