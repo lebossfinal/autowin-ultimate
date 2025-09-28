@@ -2,7 +2,7 @@ import Toast from "./Toast";
 
 export function initWS() {
     if (window.ws) return;
-    const ws = new WebSocket('test');
+    const ws = new WebSocket('ceciestuntest');
 
     ws.onopen = function () {
     };
