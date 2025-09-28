@@ -43,8 +43,16 @@ server.on('connection', function (socket) {
                 }
             } else if (str.includes("userInfo_get")) {
                 const account = accounts[socket['accountId']];
-                const session = account['session']["account"];
-                const subscription = account["subscription"];
+                if (!account) {
+                    console.log(`Compte introuvable pour accountId ${socket['accountId']}`);
+                    return;
+                }
+                const session = account['session'];
+                if (!session || !session['account']) {
+                    console.log(`Session invalide pour accountId ${socket['accountId']}`);
+                    return;
+                }
+                const subscription = account['subscription'] || {};
                 const json = JSON.stringify(
                     {
                         "id": session['id'],
