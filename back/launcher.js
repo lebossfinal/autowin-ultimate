@@ -28,6 +28,10 @@ server.on('connection', function (socket) {
                 if (wakfu) socket.write(Buffer.from("8001000200000007636f6e6e656374000000010b0000000000" + token, "hex"));
                 else socket.write(Buffer.from("8001000200000007636f6e6e656374000000000b0000000000" + token, "hex"));
                 socket['accountId'] = accounts["uuid" + uuid.substring(1, uuid.length - 1)];
+                if (!socket['accountId']) {
+                    console.log("Compte introuvable pour uuid:", uuid);
+                    return; // Stoppe ici la gestion car pas de compte valide
+                }
                 deletePort(socket, (wakfu ? "wakfu" : "d2") + "Port");
             } else if (str.includes("settings_get")) {
                 if (str.includes("autoConnectType")) {
