@@ -1,40 +1,36 @@
 {
-  "name": "autowin-ultimate-back",
-  "version": "1.0.0",
+  "name": "autowin-ultimate",
+  "version": "4.0.4",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "main": "index.js",
   "bin": "./index.js",
   "scripts": {
-    "start": "node index.js",
     "dev": "node hot-reload.js",
-    "build-win32": "pkg package.json -t node18-win -o dist/win/please-be-patient.exe",
-    "build-linux": "pkg package.json -t node14-linux dist/linux/renommez-moi-svp",
-    "build-mac": "pkg package.json -t node14-darwin dist/mac/renommez-moi-svp"
-  },
-  "engines": {
-    "node": "18.x"
+    "build-win32": "pkg package.json -t node18-win -o dist/win/rename-me.exe"
   },
   "dependencies": {
+    "async": "^3.2.5",
     "bytearray-node": "^3.3.5",
+    "bytenode": "^1.5.6",
     "frida": "^15.1.25",
+    "http-proxy-to-socks": "^1.1.2",
+    "node-fetch": "2.6.7",
     "node-machine-id": "^1.1.12",
+    "node-socks5-server": "^1.1.0",
     "pkg": "^5.8.1",
+    "protobufjs": "^7.3.2",
     "socks": "2.7.1",
     "socks-proxy-agent": "6.0.0",
     "uuid": "^8.3.2",
+    "varint": "^6.0.0",
     "ws": "^8.8.0"
   },
   "pkg": {
     "outputPath": "dist",
     "assets": [
-      "node_modules/**/*",
-      "build"
+      "node_modules/**/*"
     ]
   }
 }
-
-
-
-
