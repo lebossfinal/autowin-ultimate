@@ -2,8 +2,15 @@ import Toast from "./Toast";
 
 export function initWS() {
     if (window.ws) return;
-    const ws = new WebSocket('https://autowin-ultimate.onrender.com/');
+    let wsUrl;
 
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    wsUrl = 'ws://localhost:8081';  // Pour usage local avec le .exe backend
+    } else {
+    wsUrl = 'wss://autowin-ultimate.onrender.com';  // Pour Render (online)
+    }
+
+const ws = new WebSocket(wsUrl);
     ws.onopen = function () {
     };
 
