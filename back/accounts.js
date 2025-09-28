@@ -114,15 +114,24 @@ const dataPath = "./data/";
 
 fs.existsSync(dataPath) && fs.readdirSync(dataPath).forEach(accountId => {
     if (isNaN(Number(accountId))) return;
+    
     const path = join(dataPath, accountId);
     const account = JSON.parse(fs.readFileSync(path).toString());
-    if (account.deleted) return delete accounts[accountId];
+
+    if (account.deleted) {
+        delete accounts[accountId];
+        console.log(`Compte ${accountId} supprimé`);
+        return;
+    }
+
     if (account.added) {
         accounts[accountId] = account;
         setWakfuInterface(accountId);
         watch(accountId, path);
+        console.log(`Compte ${accountId} chargé et surveillé`);
     }
 });
+
 
 
 module.exports = accounts;
