@@ -48,31 +48,25 @@ const extensions = {
     ".pdf": "application/pdf",
 };
 
-const PORT = process.env.PORT || 8081;
+const server = http.createServer(function(req, res) {
+  let fileName = path.basename(req.url.split('?')[0]) || 'index.html';
 
-const server = http.createServer(
-    function (req, res) {
-        // Ajout des headers CORS
-        res.setHeader("Access-Control-Allow-Origin", "https://lebossfinal.github.io");
-        res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  if (!extensions[path.extname(fileName)]) {
+    fileName = 'index.html';
+  }
 
-        // Répondre aux requêtes OPTIONS (prévol)
-        if (req.method === 'OPTIONS') {
-            res.writeHead(204);
-            res.end();
-            return;
-        }
+  res.setHeader('Content-Type', extensions[path.extname(fileName)] || 'text/html');
 
+  // C’est ici que les headers peuvent être définis, y compris CORS
+  // Il faut ajouter ici la ligne pour autoriser ton GitHub Pages
+  res.setHeader('Access-Control-Allow-Origin', 'https://lebossfinal.github.io'); 
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-        let fileName = path.basename(req.url).split('?')[0] || "index.html";
-        if (!extensions[path.extname(fileName)]) fileName = "index.html";
-        res.setHeader("Content-Type", extensions[path.extname(fileName)]);
-        res.end(router['files'][fileName]);
-    }).listen(PORT, '0.0.0.0', () => {
-        console.log(`Server running on port ${PORT}`);
-    });
-
+  res.end(router.files[fileName]);
+}).listen(8081, () => {
+    console.log("Server listening on port 8081");
+});
 server.on('upgrade', function upgrade(request, socket, head) {
     wss['handleUpgrade'](request, socket, head, function done(ws) {
         wss['emit']('connection', ws, request);
@@ -123,12 +117,6 @@ if (!c.isTest) {
             }, null, "launcher.cdn.ankama.com"
         );
         newVersion = version['split']('\n')[0].split(' ')[1];
-        if (process.platform === "win32" && process.env.NODE_ENV !== 'production') {
-            execSync('start "" http://localhost:' + PORT);
-        }
+        process.platform === "win32" && execSync('start "" http://localhost:8081');
     })();
 }
-
-
-
-
