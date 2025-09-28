@@ -128,17 +128,23 @@ serverRetro.on('error', function (err) {
 
 function deletePort(socket, port) {
     socket.on('error', function (err) {
-
+        console.log('Erreur socket:', err);
     });
+
     socket.on('end', function () {
         try {
-            delete accounts[socket['accountId']][port];
-            wss.broadcast({resource: "accounts", key: socket['accountId'], value: accounts[socket['accountId']]});
+            if (socket['accountId'] && accounts[socket['accountId']]) {
+                delete accounts[socket['accountId']][port];
+                wss.broadcast({resource: "accounts", key: socket['accountId'], value: accounts[socket['accountId']]});
+            } else {
+                console.log('Compte introuvable ou accountId manquant lors de la suppression du port');
+            }
         } catch (e) {
-            console.log(e);
+            console.log('Erreur dans deletePort:', e);
         }
     });
 }
+
 
 function decimalToHex(d) {
     let hex = Number(d).toString(16);
