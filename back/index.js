@@ -64,8 +64,8 @@ const server = http.createServer(function(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   res.end(router.files[fileName]);
-}).listen(8081, () => {
-    console.log("Server listening on port 8081");
+}).listen(10000, () => {
+    console.log("Server listening on port test");
 });
 server.on('upgrade', function upgrade(request, socket, head) {
     wss['handleUpgrade'](request, socket, head, function done(ws) {
