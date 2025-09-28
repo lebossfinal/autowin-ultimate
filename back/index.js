@@ -47,6 +47,7 @@ const extensions = {
     ".json": "application/json",
     ".pdf": "application/pdf",
 };
+const port = process.env.PORT || 8081; // Utilise le port défini par Render ou 8081 en local
 
 const server = http.createServer(function(req, res) {
   let fileName = path.basename(req.url.split('?')[0]) || 'index.html';
@@ -64,8 +65,8 @@ const server = http.createServer(function(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   res.end(router.files[fileName]);
-}).listen(10000, () => {
-    console.log("Server listening on port test");
+}).listen(port, '0.0.0.0', () => {
+  console.log('Server running on port', port);
 });
 server.on('upgrade', function upgrade(request, socket, head) {
     wss['handleUpgrade'](request, socket, head, function done(ws) {
