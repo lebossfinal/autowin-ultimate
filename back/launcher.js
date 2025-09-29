@@ -11,7 +11,7 @@ const net = require('net'),
     dofusServer = new net.Server().listen(5555);
 
 dofusServer.on('connection', () => {
-    console.log("Si autowin-ultimate ne fonctionne pas, vous devez setup votre DSN manuellement et désactiver IPV6");
+    console.log("Si dofus-multi ne fonctionne pas, vous devez setup votre DSN manuellement et désactiver IPV6");
     console.log("Voir tuto dans rubrique Windows 10 sur le lien ci-dessous");
     console.log("https://www.01net.com/astuces/comment-activer-le-dns-cloudflare-pour-accelerer-sa-navigation-web-1411816.html#attachment_862794");
 });
@@ -28,10 +28,6 @@ server.on('connection', function (socket) {
                 if (wakfu) socket.write(Buffer.from("8001000200000007636f6e6e656374000000010b0000000000" + token, "hex"));
                 else socket.write(Buffer.from("8001000200000007636f6e6e656374000000000b0000000000" + token, "hex"));
                 socket['accountId'] = accounts["uuid" + uuid.substring(1, uuid.length - 1)];
-                if (!socket['accountId']) {
-                    console.log("Compte introuvable pour uuid:", uuid);
-                    return; // Stoppe ici la gestion car pas de compte valide
-                }
                 deletePort(socket, (wakfu ? "wakfu" : "d2") + "Port");
             } else if (str.includes("settings_get")) {
                 if (str.includes("autoConnectType")) {
@@ -43,16 +39,8 @@ server.on('connection', function (socket) {
                 }
             } else if (str.includes("userInfo_get")) {
                 const account = accounts[socket['accountId']];
-                if (!account) {
-                    console.log(`Compte introuvable pour accountId ${socket['accountId']}`);
-                    return;
-                }
-                const session = account['session'];
-                if (!session || !session['account']) {
-                    console.log(`Session invalide pour accountId ${socket['accountId']}`);
-                    return;
-                }
-                const subscription = account['subscription'] || {};
+                const session = account['session']["account"];
+                const subscription = account["subscription"];
                 const json = JSON.stringify(
                     {
                         "id": session['id'],
@@ -128,23 +116,17 @@ serverRetro.on('error', function (err) {
 
 function deletePort(socket, port) {
     socket.on('error', function (err) {
-        console.log('Erreur socket:', err);
-    });
 
+    });
     socket.on('end', function () {
         try {
-            if (socket['accountId'] && accounts[socket['accountId']]) {
-                delete accounts[socket['accountId']][port];
-                wss.broadcast({resource: "accounts", key: socket['accountId'], value: accounts[socket['accountId']]});
-            } else {
-                console.log('Compte introuvable ou accountId manquant lors de la suppression du port');
-            }
+            delete accounts[socket['accountId']][port];
+            wss.broadcast({resource: "accounts", key: socket['accountId'], value: accounts[socket['accountId']]});
         } catch (e) {
-            console.log('Erreur dans deletePort:', e);
+            console.log(e);
         }
     });
 }
-
 
 function decimalToHex(d) {
     let hex = Number(d).toString(16);
@@ -197,6 +179,3 @@ async function getGameToken(account, socket, game) {
         if (buf) socket.write(buf);
     })
 }
-
-
-

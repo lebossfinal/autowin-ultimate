@@ -47,27 +47,16 @@ const extensions = {
     ".json": "application/json",
     ".pdf": "application/pdf",
 };
-const port = process.env.PORT || 8081; // Utilise le port défini par Render ou 8081 en local
 
-const server = http.createServer(function(req, res) {
-  let fileName = path.basename(req.url.split('?')[0]) || 'index.html';
+const server = http.createServer(
+    function (req,
+              res) {
+        let fileName = path.basename(req.url).split('?')[0] || "index.html";
+        if (!extensions[path.extname(fileName)]) fileName = "index.html";
+        res.setHeader("Content-Type", extensions[path.extname(fileName)]);
+        res.end(router['files'][fileName]);
+    }).listen(8081);
 
-  if (!extensions[path.extname(fileName)]) {
-    fileName = 'index.html';
-  }
-
-  res.setHeader('Content-Type', extensions[path.extname(fileName)] || 'text/html');
-
-  // C’est ici que les headers peuvent être définis, y compris CORS
-  // Il faut ajouter ici la ligne pour autoriser ton GitHub Pages
-  res.setHeader('Access-Control-Allow-Origin', 'https://lebossfinal.github.io'); 
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-  res.end(router.files[fileName]);
-}).listen(port, '0.0.0.0', () => {
-  console.log('Server running on port', port);
-});
 server.on('upgrade', function upgrade(request, socket, head) {
     wss['handleUpgrade'](request, socket, head, function done(ws) {
         wss['emit']('connection', ws, request);

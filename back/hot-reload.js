@@ -58,7 +58,3 @@ function start() {
 
     return process;
 }
-
-
-
-

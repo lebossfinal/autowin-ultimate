@@ -43,6 +43,3 @@ function getSocket(host, port, account) {
         }).then(info => resolve(info.socket))
     });
 }
-
-
-

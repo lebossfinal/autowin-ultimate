@@ -272,6 +272,3 @@ function getSource(port, type, account) {
         });
     }
 })();
-
-
-

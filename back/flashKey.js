@@ -29,6 +29,3 @@ module.exports = () => {
     }
     return sSentence + checksum(sSentence);
 };
-
-
-

@@ -33,7 +33,3 @@ module.exports.generateHashFromCertif = function (hm1, certif) {
         r = Buffer.concat([i.update(certif['encodedCertificate'], "base64"), i.final()]);
     return crypto.createHash("sha256").update(hm1 + r.toString()).digest("hex")
 };
-
-
-
-

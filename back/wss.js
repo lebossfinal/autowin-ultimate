@@ -28,7 +28,3 @@ function heartBeat() {
 }
 
 heartBeat();
-
-
-
-

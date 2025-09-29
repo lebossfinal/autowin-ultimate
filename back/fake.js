@@ -97,6 +97,3 @@ async function CreateToken(key, localAddress, agent) {
         }
     );
 }
-
-
-

@@ -42,6 +42,3 @@ module.exports = (output, id, data, packetCounter) => {
     output.writeBytes(data, 0, length);
     return Buffer.from(output.buffer.toString("hex"), "hex");
 };
-
-
-
